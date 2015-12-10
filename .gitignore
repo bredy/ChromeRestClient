@@ -1,3 +1,7 @@
 /.project
+/.metadata
+/RemoteSystemsTempFiles
 **/gwt-unitCache/*
 **/extras/*
+build
+
