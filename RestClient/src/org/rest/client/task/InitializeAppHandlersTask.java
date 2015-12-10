@@ -2,6 +2,7 @@ package org.rest.client.task;
 
 import org.rest.client.AppEventsHandlers;
 import org.rest.client.AppRequestFactory;
+import org.rest.client.AuthorizationFactory;
 import org.rest.client.ExternalEventsFactory;
 import org.rest.client.RestClient;
 import org.rest.client.ShortcutHandlers;
@@ -46,6 +47,11 @@ public class InitializeAppHandlersTask implements LoadTask {
 		callback.onInnerTaskFinished(1);
 		if(loaderWidget != null){
 			loaderWidget.setText("Initialize event handlers: Notifications");
+		}
+		AuthorizationFactory.initialize(eventBus);
+		callback.onInnerTaskFinished(1);
+		if(loaderWidget != null){
+			loaderWidget.setText("Initialize event handlers: Authorization");
 		}
 		UserNotificationsFactory.registerDelay();
 		callback.onInnerTaskFinished(1);

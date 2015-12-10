@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import org.rest.client.event.RequestChangeEvent;
 import org.rest.client.event.RequestEndEvent;
 import org.rest.client.event.RequestStartActionEvent;
+import org.rest.client.event.UnauthorizedResponseEvent;
 import org.rest.client.request.FilesObject;
 import org.rest.client.request.FormPayloadData;
 import org.rest.client.request.HttpMethodOptions;
@@ -286,15 +287,20 @@ public class AppRequestFactory {
 			Window.alert("Something goes wrong :(\nResponse is null!");
 			return;
 		}
-		ScheduledCommand sc = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				long loadingTime = new Date().getTime() - startTime.getTime();
-				RequestEndEvent event = new RequestEndEvent(true, response, loadingTime);
-				eventBus.fireEvent(event);
-			}
-		};
-		Scheduler.get().scheduleDeferred(sc);
+		if (response.getStatus() == 401) {
+			StatusNotification.notify("Unauthorized, refreshing token...", StatusNotification.TYPE_NORMAL, StatusNotification.TIME_SHORT, false);
+			eventBus.fireEvent(new UnauthorizedResponseEvent());
+		} else {
+			ScheduledCommand sc = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					long loadingTime = new Date().getTime() - startTime.getTime();
+					RequestEndEvent event = new RequestEndEvent(true, response, loadingTime);
+					eventBus.fireEvent(event);
+				}
+			};
+			Scheduler.get().scheduleDeferred(sc);
+		}
 	}
 	
 	
